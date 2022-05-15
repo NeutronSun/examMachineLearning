@@ -1,7 +1,56 @@
 import math 
 import random 
 
-random.seed(1)
+
+
+#dataset 
+dataset=[
+[1.75,7.0,0],
+[1.54,4.5,1],
+[1.60,5.1,1],
+[1.76,7.5,0],
+[1.55,4.0,1],
+[1.81,8.0,0],
+[1.80,8.2,0],
+[1.56,4.3,1],
+[1.68,7.1,0],
+[1.60,5.5,1],
+[1.70,6.5,0],
+[1.55,5.9,1],
+[1.80,7.0,0],
+[1.70,6.0,0],
+[1.80,7.0,1],
+[1.60,5.0,1],
+[1.55,5.0,1]]    
+
+#dataset da testare
+toAnalize=[
+[1.75,7.5],
+[1.54,5.2],
+[1.59, 8.0],
+[1.76,7.0],
+[1.55,4.0],
+[1.81,8.0],
+[1.80,8.2],
+[1.56,4.3],
+[1.68,7.1],]  
+
+def main():
+    random.seed(1)
+    #valori dei pesi "corretti" 
+    w1, w2, b = train()
+
+    pred=[] 
+    for person in toAnalize:  
+        z = w1 * person[0] + w2 * person[1] + b
+        prediction=sigmoide(z)    
+        print(person[0], person[1], prediction)
+        if prediction <= 0.5: 
+            pred.append('man') 
+        else: 
+            pred.append('woman') 
+
+    print(pred) 
 
 #Una funzione sigmoide e' quella famiglia di funzioni con la 
 #particolare caratteristica di essere s-shaped.
@@ -25,33 +74,6 @@ def sigmoide(t):
 def sigmoide_p(t):
     return sigmoide(t)*(1 - sigmoide(t))
 
-
-#dataset 
-dataset=[
-[1.75,7.0,0],
-[1.54,4.5,1],
-[1.60,5.1,1],
-[1.76,7.5,0],
-[1.55,4.0,1],
-[1.81,8.0,0],
-[1.80,8.2,0],
-[1.56,4.3,1],
-[1.68,7.1,0],
-[1.60,5.5,1],
-[1.70,6.5,0],
-[1.55,5.9,1],
-[1.80,7.0,0],
-[1.70,6.0,0],
-[1.80,7.0,0],
-[1.60,5.0,1],
-[1.55,5.0,1]]    
-
-#dataset da testare
-toAnalize=[
-[1.75,7.5],
-[1.54,5.2],
-[1.59, 8.0]]  
-
 def train():
 
     #Inizializzazione dei pesi in maniera casuale.
@@ -62,7 +84,7 @@ def train():
     b = random.random()     
 
     #numero di cicli di apprendimento
-    iteration = 1000000 
+    iteration = 10000
 
     #intero che indica la velocita' di apprendimento
     #indica di quanto il valore dei pesi deve essere modificato
@@ -95,17 +117,5 @@ def train():
         
     return w1, w2, b
 
-#valori dei pesi "corretti" 
-w1, w2, b = train()
 
-pred=[] 
-for person in toAnalize:  #per ogni gatto nel dataset
-    z = w1 * person[0] + w2 * person[1] + b
-    prediction=sigmoide(z)    #previsione della rete
-    print(person[0], person[1], prediction)
-    if prediction <= 0.5: #se la previsione è minore o uguale a 0.5
-        pred.append('man') #aggiungi la stringa "giungla" all'array pred
-    else: 
-        pred.append('woman') #altrimenti aggiungi la stringa "sabbie" all'arrat pred
-
-print(pred) #stampa a schermo l'array pred
+main()
