@@ -1,5 +1,6 @@
 import math 
 import random 
+from gui import GUI
 
 
 
@@ -33,13 +34,21 @@ toAnalize=[
 [1.81,8.0],
 [1.80,8.2],
 [1.56,4.3],
-[1.68,7.1],]  
+[1.68,7.1],
+[1.80,7.0],]  
+
 
 def main():
     random.seed(1)
+    #Inizializzazione dei pesi in maniera casuale.
+    #Il peso e' quel numero che viene moltiplicato per il valore
+    #del neurone di partenza per arrivare a quello di output.
+    w1 = random.random()
+    w2 = random.random()
+    b = random.random()     
     #valori dei pesi "corretti" 
-    w1, w2, b = train()
-
+    w1, w2, b = train(w1, w2, b)
+    print(w1,w2,b)
     pred=[] 
     for person in toAnalize:  
         z = w1 * person[0] + w2 * person[1] + b
@@ -49,8 +58,9 @@ def main():
             pred.append('man') 
         else: 
             pred.append('woman') 
-
-    print(pred) 
+    print(pred)
+    GUI.inizializePlot(dataset,toAnalize, w1, w2, b)
+    GUI.showPlot
 
 #Una funzione sigmoide e' quella famiglia di funzioni con la 
 #particolare caratteristica di essere s-shaped.
@@ -74,14 +84,8 @@ def sigmoide(t):
 def sigmoide_p(t):
     return sigmoide(t)*(1 - sigmoide(t))
 
-def train():
+def train(w1, w2 ,b):
 
-    #Inizializzazione dei pesi in maniera casuale.
-    #Il peso e' quel numero che viene moltiplicato per il valore
-    #del neurone di partenza per arrivare a quello di output.
-    w1 = random.random()
-    w2 = random.random()
-    b = random.random()     
 
     #numero di cicli di apprendimento
     iteration = 10000
@@ -97,7 +101,7 @@ def train():
     #Il learning rate indica quanto devo aumentare o diminuire il valore di x.
     #x=x-pendenza. Se pero' non si usa il learning rate, x diventerà -x e così via.
     #far vedere disegnigno.
-    learningRate = 0.117 
+    learningRate = 0.117
     
     for i in range(iteration):
         
