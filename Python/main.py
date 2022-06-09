@@ -3,7 +3,6 @@ import random
 from gui import GUI
 
 
-
 #dataset 
 dataset=[
 [1.75,7.0,-1],
@@ -62,8 +61,8 @@ def main():
         pred.append(answer)
         
     print(pred)
-    GUI.inizializePlot(dataset,toAnalize, w1, w2, b)
-    GUI.showPlot
+    #GUI.inizializePlot(dataset,toAnalize, w1, w2, b)
+    #GUI.showPlot
 
 #Una funzione sigmoide e' quella famiglia di funzioni con la 
 #particolare caratteristica di essere s-shaped.
@@ -96,7 +95,7 @@ def sigmoide_p(t):
 def train(w1, w2 ,b):
 
     #numero di cicli di apprendimento
-    iteration = 10000
+    iteration = 100
 
     #intero che indica la veloci.ta' di apprendimento
     #indica di quanto il valore dei pesi deve essere modificato
@@ -109,7 +108,7 @@ def train(w1, w2 ,b):
     #Il learning rate indica quanto devo aumentare o diminuire il valore di x.
     #x=x-pendenza. Se pero' non si usa il learning rate, x diventerà -x e così via.
     #far vedere disegnigno.
-    learningRate = 0.2
+    learningRate = 0.8
     for i in range(iteration):
         for person in dataset:
             point = person
@@ -119,14 +118,15 @@ def train(w1, w2 ,b):
             #pred = app(supp) 
             pred = tanh(z)
             target = point[2] 
-            print(pred, target)
             #data la funzione di costo c = (sigmoide(point[0]*w1, point[1]*w2, b) - target)^2
             #la sua derivata sara' c' sara' il prodotto di questi elementi 
             # 2*(pred-target) = dcosto/dpred
             # sigmoide_p(z) = dpred/dz
             # point[0] = dz/dw1, in quanto w1 essendo una variabile diventa 1, rimane point[0].
             #point[1]w2 + b possono essere visti come costante quindi la derivata e' zero.
-            w1 = w1 - learningRate * ((2*(pred - target)) * tanh_p(z) * point[0])
+            a = ((2*(pred - target)) * tanh_p(z) * point[0])
+            print(learningRate * a, target)
+            w1 = w1 - learningRate * a
             w2 = w2 - learningRate * ((2*(pred - target)) * tanh_p(z) * point[1])
             b = b - learningRate * ((2*(pred - target)) * tanh_p(z) * 1)
         
