@@ -1,4 +1,4 @@
-import math 
+import math
 import random 
 from gui import GUI
 
@@ -6,20 +6,20 @@ from gui import GUI
 
 #dataset 
 dataset=[
-[1.75,7.0,0],
+[1.75,7.0,-1],
 [1.54,4.5,1],
 [1.60,5.1,1],
-[1.76,7.5,0],
+[1.76,7.5,-1],
 [1.55,4.0,1],
-[1.81,8.0,0],
-[1.80,8.2,0],
+[1.81,8.0,-1],
+[1.80,8.2,-1],
 [1.56,4.3,1],
-[1.68,7.1,0],
+[1.68,7.1,-1],
 [1.60,5.5,1],
-[1.70,6.5,0],
+[1.70,6.5,-1],
 [1.55,5.9,1],
-[1.80,7.0,0],
-[1.70,6.0,0],
+[1.80,7.0,-1],
+[1.70,6.0,-1],
 [1.80,7.0,1],
 [1.60,5.0,1],
 [1.55,5.0,1]]    
@@ -45,19 +45,22 @@ def main():
     #del neurone di partenza per arrivare a quello di output.
     w1 = random.random()
     w2 = random.random()
-    b = random.random()     
+    b = random.random()
     #valori dei pesi "corretti" 
     w1, w2, b = train(w1, w2, b)
     print(w1,w2,b)
     pred=[] 
     for person in toAnalize:  
         z = w1 * person[0] + w2 * person[1] + b
-        prediction=sigmoide(z)    
-        print(person[0], person[1], prediction)
-        if prediction <= 0.5: 
-            pred.append('man') 
-        else: 
-            pred.append('woman') 
+        prediction=app(tanh(z))
+        
+        
+        answer = neuron_man(prediction)
+        print(answer)
+        if answer == "":
+            answer = neuron_woman(prediction)
+        pred.append(answer)
+        
     print(pred)
     GUI.inizializePlot(dataset,toAnalize, w1, w2, b)
     GUI.showPlot
@@ -74,6 +77,12 @@ def main():
 def sigmoide(t):
     return 1/(1+math.exp(-t))
 
+def tanh(t):
+    return  (math.exp(t) - math.exp(-t))/(math.exp(t) + math.exp(-t))
+
+def tanh_p(t):
+    return 1 - tanh(t)**2
+
 #Derivata prima della funzione sigmoide
 #Particolarita' della funzione:
 #1) Bell-shaped, come per tutte le altri funzioni sigmoide
@@ -86,11 +95,10 @@ def sigmoide_p(t):
 
 def train(w1, w2 ,b):
 
-
     #numero di cicli di apprendimento
     iteration = 10000
 
-    #intero che indica la velocita' di apprendimento
+    #intero che indica la veloci.ta' di apprendimento
     #indica di quanto il valore dei pesi deve essere modificato
     #rispetto al valore obiettivo.
     #Se volessi far abbassare la pendenza della funzione di costo, per far
@@ -101,25 +109,43 @@ def train(w1, w2 ,b):
     #Il learning rate indica quanto devo aumentare o diminuire il valore di x.
     #x=x-pendenza. Se pero' non si usa il learning rate, x diventerà -x e così via.
     #far vedere disegnigno.
-    learningRate = 0.117
-    
+    learningRate = 0.2
     for i in range(iteration):
-        
-        point = dataset[random.randint(0,len(dataset)-1)]
-        z = point[0] * w1 + point[1] * w2 + b
-        pred = sigmoide(z) 
-        target = point[2] 
-        #data la funzione di costo c = (sigmoide(point[0]*w1, point[1]*w2, b) - target)^2
-        #la sua derivata sara' c' sara' il prodotto di questi elementi 
-        # 2*(pred-target) = dcosto/dpred
-        # sigmoide_p(z) = dpred/dz
-        # point[0] = dz/dw1, in quanto w1 essendo una variabile diventa 1, rimane point[0].
-        #point[1]w2 + b possono essere visti come costante quindi la derivata e' zero.
-        w1 = w1 - learningRate * ((2*(pred - target)) * sigmoide_p(z) * point[0])
-        w2 = w2 - learningRate * ((2*(pred - target)) * sigmoide_p(z) * point[1])
-        b = b - learningRate * ((2*(pred - target)) * sigmoide_p(z) * 1)
+        for person in dataset:
+            point = person
+            z = point[0] * w1 + point[1] * w2 + b
+            #supp = tanh(z)
+            #print(supp)
+            #pred = app(supp) 
+            pred = tanh(z)
+            target = point[2] 
+            print(pred, target)
+            #data la funzione di costo c = (sigmoide(point[0]*w1, point[1]*w2, b) - target)^2
+            #la sua derivata sara' c' sara' il prodotto di questi elementi 
+            # 2*(pred-target) = dcosto/dpred
+            # sigmoide_p(z) = dpred/dz
+            # point[0] = dz/dw1, in quanto w1 essendo una variabile diventa 1, rimane point[0].
+            #point[1]w2 + b possono essere visti come costante quindi la derivata e' zero.
+            w1 = w1 - learningRate * ((2*(pred - target)) * tanh_p(z) * point[0])
+            w2 = w2 - learningRate * ((2*(pred - target)) * tanh_p(z) * point[1])
+            b = b - learningRate * ((2*(pred - target)) * tanh_p(z) * 1)
         
     return w1, w2, b
+def app(n):
+    if n >= 0:
+        return 1
+    return -1
+def neuron_man(prediction):
+    prediction = prediction * (-1)
+    if prediction == 1:
+        return "man"
+    else:
+        return ""
 
-
+def neuron_woman(prediction):
+    prediction = prediction * 1
+    if prediction == 1:
+        return "woman"
+    else:
+        return ""
 main()
