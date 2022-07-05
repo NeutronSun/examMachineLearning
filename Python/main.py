@@ -47,8 +47,9 @@ def main():
     w2 = random.random()
     b = random.random()     
     #valori dei pesi "corretti" 
+    print("Valori dei pesi iniziali: ",w1,w2,b)
     w1, w2, b = train(w1, w2, b)
-    print(w1,w2,b)
+    print("Valori dei pesi elaborati: ",w1,w2,b)
     pred=[] 
     for person in toAnalize:  
         z = w1 * person[0] + w2 * person[1] + b
